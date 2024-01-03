@@ -54,12 +54,39 @@ const controls = new OrbitControls(camera , renderer.domElement);
 // adding random positioned starts to the scene
 Array(200).fill().forEach(addStar);
 
+// adding a background to our scene
+const spaceTexture = new THREE.TextureLoader().load('bg.jpg');
+scene.background = spaceTexture;
 
-animate();
+// testing adding texture to objects
+const testTexture = new THREE.TextureLoader().load('andro.jpg');
+const tes = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3), new THREE.MeshBasicMaterial({ map: testTexture }));
+
+scene.add(tes);
+
+// adding moon
+
+const moonTexture = new THREE.TextureLoader().load('moon.jpg');
+const normalTexture = new THREE.TextureLoader().load('normal.jpg');
+
+const moon = new THREE.Mesh(
+  new THREE.SphereGeometry(3, 32, 32),
+  new THREE.MeshStandardMaterial({
+    map: moonTexture,
+    normalMap: normalTexture,
+  })
+);
+moon.position.z= 30;
+moon.position.x = -10;
+scene.add(moon);
 
 
-
-function animate() {
+// config
+  // calling methode to re render the scene and update the doms
+  animate();
+  // trigger the function moveCamera() on scroll 
+  document.body.onscroll = moveCamera;
+ function animate() {
   requestAnimationFrame(animate);
 
   torus.rotation.x += 0.005;
@@ -71,6 +98,7 @@ function animate() {
   renderer.render(scene,camera);
   }
 
+  // a methode to add random positioned stars to the scene
   function addStar(){
     const geometry = new THREE.SphereGeometry(0.25,24,24);
     const material = new THREE.MeshStandardMaterial({color:0xffffff});
@@ -80,3 +108,20 @@ function animate() {
     star.position.set(x,y,z);
     scene.add(star);
   }
+
+  // a function to move the camera on scroll to make a small animation
+  function moveCamera() {
+    const t = document.body.getBoundingClientRect().top;
+    moon.rotation.x += 0.005;
+    moon.rotation.y += 0.0075;
+    moon.rotation.z += 0.005;
+  
+    tes.rotation.y += 0.01;
+    tes.rotation.z += 0.01;
+  
+    camera.position.z = t * -0.01;
+    camera.position.x = t * -0.0002;
+    camera.rotation.y = t * -0.0002;
+     
+
+    }
